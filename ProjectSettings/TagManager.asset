@@ -5,6 +5,13 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ladder
+  - CinemachineTarget
+  - Weapon
+  - SecondCamera
+  - BulletSpawn
+  - LevelPart
+  - Dummie
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -13,8 +20,8 @@ TagManager:
   - Water
   - UI
   - Hands
-  - 
-  - 
+  - Player
+  - NPC
   - 
   - 
   - 
