@@ -7,11 +7,18 @@ public class navigation_patrol : MonoBehaviour
 
     public Transform[] points;
     private int destPoint = 0;
+    private Animator animator;
     private NavMeshAgent agent;
+    private bool isChasing = false;
+    private Transform player;
+    public float rotSpeed = 10f;
+    private static readonly int IsRunning = Animator.StringToHash("isRunning");
+
 
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
 
         // Disabling auto-braking allows for continuous movement
@@ -49,14 +56,49 @@ public class navigation_patrol : MonoBehaviour
         } while (destPoint == newDestPoint);
 
         destPoint = newDestPoint;
+        animator.SetBool(IsRunning, false);  // Ensure NPC is walking while patrolling
+    }
+
+    private void InstantlyTurn(Vector3 destination)
+    {
+        //When on target -> dont rotate!
+        if ((destination - transform.position).magnitude < 0.1f) return;
+
+        Vector3 direction = (destination - transform.position).normalized;
+        Quaternion qDir = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, qDir, Time.deltaTime * rotSpeed);
+    }
+    public void StartChasing(Transform target)
+    {
+        isChasing = true;
+        player = target;
+        animator.SetBool(IsRunning, true);  // NPC starts running
+    }
+
+    public void StopChasing()
+    {
+        isChasing = false;
+        player = null;
+        animator.SetBool(IsRunning, false);  // NPC stops running and goes back to walking
+        if (agent != null && agent.isActiveAndEnabled)
+        {
+            GotoNextPoint();
+        }
     }
 
 
     void Update()
     {
+        InstantlyTurn(agent.destination);
         // Choose the next destination point when the agent gets
         // close to the current one.
-        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        if (isChasing)
+        {
+            agent.destination = player.position;
+        }
+        else if (!agent.pathPending && agent.remainingDistance < 0.5f)
+        {
             GotoNextPoint();
+        }
     }
 }
