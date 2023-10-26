@@ -13,6 +13,10 @@ public class navigation_patrol : MonoBehaviour
     public float rotSpeed = 10f;
     public static bool playerInZone = false;
     private static readonly int IsRunning = Animator.StringToHash("isRunning");
+    public GameObject bulletPrefab; // Prefab for the bullet/projectile
+    public Transform shootPoint; // Starting point for the bullet (e.g. the end of a gun barrel)
+    public float shootForce = 20f; // Force with which the bullet is shot
+    public float shootingRange = 10f; // The range within which the NPC will shoot the player
 
 
 
@@ -103,7 +107,7 @@ public class navigation_patrol : MonoBehaviour
     {
         player = null;
         animator.SetBool(IsRunning, false);  // NPC stops running and goes back to walking
-            GotoNextPoint();
-        
+        GotoNextPoint();
+
     }
 }
