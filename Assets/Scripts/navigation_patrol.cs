@@ -9,9 +9,9 @@ public class navigation_patrol : MonoBehaviour
     private int destPoint = 0;
     private Animator animator;
     private NavMeshAgent agent;
-    private bool isChasing = false;
     private Transform player;
     public float rotSpeed = 10f;
+    public static bool playerInZone = false;
     private static readonly int IsRunning = Animator.StringToHash("isRunning");
 
 
@@ -68,37 +68,42 @@ public class navigation_patrol : MonoBehaviour
         Quaternion qDir = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, qDir, Time.deltaTime * rotSpeed);
     }
-    public void StartChasing(Transform target)
-    {
-        isChasing = true;
-        player = target;
-        animator.SetBool(IsRunning, true);  // NPC starts running
-    }
 
-    public void StopChasing()
-    {
-        isChasing = false;
-        player = null;
-        animator.SetBool(IsRunning, false);  // NPC stops running and goes back to walking
-        if (agent != null && agent.isActiveAndEnabled)
-        {
-            GotoNextPoint();
-        }
-    }
 
 
     void Update()
     {
         InstantlyTurn(agent.destination);
-        // Choose the next destination point when the agent gets
-        // close to the current one.
-        if (isChasing)
+
+        if (playerInZone)
         {
-            agent.destination = player.position;
+            // Ensure the player reference is set for this instance
+            if (player == null)
+            {
+                player = GameObject.FindGameObjectWithTag("Player").transform;
+            }
+
+            // Start chasing the player
+            StartChasing(player);
         }
         else if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
-            GotoNextPoint();
+            StopChasing();
         }
+    }
+
+    public void StartChasing(Transform target)
+    {
+        player = target;
+        agent.destination = player.position;
+        animator.SetBool(IsRunning, true);  // NPC starts running
+    }
+
+    public void StopChasing()
+    {
+        player = null;
+        animator.SetBool(IsRunning, false);  // NPC stops running and goes back to walking
+            GotoNextPoint();
+        
     }
 }

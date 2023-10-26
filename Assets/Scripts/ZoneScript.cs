@@ -4,20 +4,28 @@ using UnityEngine;
 
 public class ZoneScript : MonoBehaviour
 {
-    public navigation_patrol npcScript;
-    // Start is called before the first frame update
- void OnTriggerEnter(Collider other)
-{
-    if (other.CompareTag("Player"))
+    void OnTriggerEnter(Collider other)
     {
-        npcScript.StartChasing(other.transform);
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player entered zone");
+            navigation_patrol.playerInZone = true;
+           
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player exited zone");
+            navigation_patrol.playerInZone = false;
+            
+        }
     }
 }
-void OnTriggerExit(Collider other)
-{
-    if (other.CompareTag("Player"))
-    {
-        npcScript.StopChasing();
-    }
-}
-}
+
+
+
+
+
