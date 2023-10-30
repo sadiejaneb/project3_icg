@@ -7,7 +7,6 @@ public class navigation_patrol : MonoBehaviour
     private int destPoint = 0;
     private NavMeshAgent agent;
 
-    private Animator animator;
     public float patrolSpeed = 2.0f;
     public float chaseSpeed = 5.0f;
     [SerializeField]
@@ -16,8 +15,8 @@ public class navigation_patrol : MonoBehaviour
 
     public static bool playerInZone = false;
     public float rotSpeed = 10f;
-    public GameObject bulletPrefab; 
-    public Transform shootPoint; 
+    public GameObject bulletPrefab;
+    public Transform shootPoint;
     public Transform gunTransform;
     public float shootingInterval = 1f; // Time in seconds between shots
 
@@ -28,7 +27,6 @@ public class navigation_patrol : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.autoBraking = false;
 
-        animator = GetComponent<Animator>();
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
         GotoNextPoint();
@@ -55,7 +53,7 @@ public class navigation_patrol : MonoBehaviour
         if (playerInZone)
         {
             FaceTarget(playerTransform.position);  // Turn the entire NPC towards the player
-            AimGunAtPlayer();  // Point the gun directly at the player
+            //AimGunAtPlayer();  // Point the gun directly at the player
             HandlePlayerInZone();
             Shoot();
         }
@@ -65,15 +63,11 @@ public class navigation_patrol : MonoBehaviour
         }
     }
 
-
     void HandlePlayerInZone()
     {
         FaceTarget(playerTransform.position); // Always face the player when in the zone
 
         float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-
-        animator.SetBool("IsShooting", true);
-        animator.SetLayerWeight(1, 1);  // Enables the shooting animation layer
 
         if (distanceToPlayer <= shootingRange)
         {
@@ -87,11 +81,7 @@ public class navigation_patrol : MonoBehaviour
 
     public void HandlePlayerOutOfZone()
     {
-        animator.SetBool("IsShooting", false);
-        animator.SetLayerWeight(1, 0);  // Disables the shooting animation layer
-        animator.SetFloat("Speed", patrolSpeed);
         agent.speed = patrolSpeed; // Set NavMeshAgent speed to patrolSpeed
-
         InstantlyTurn(agent.destination);
 
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
@@ -100,13 +90,11 @@ public class navigation_patrol : MonoBehaviour
 
     void StopAgent()
     {
-        animator.SetFloat("Speed", 0);
         agent.isStopped = true; // Stop the agent from moving
     }
 
     void ChasePlayer()
     {
-        animator.SetFloat("Speed", chaseSpeed);
         agent.speed = chaseSpeed; // Set NavMeshAgent speed to chaseSpeed
         agent.destination = playerTransform.position;
         agent.isStopped = false;
@@ -118,16 +106,6 @@ public class navigation_patrol : MonoBehaviour
         Quaternion lookRotation = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotSpeed);
     }
-    void AimGunAtPlayer()
-    {
-        Vector3 directionToPlayer = playerTransform.position - gunTransform.position;
-        Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
-        gunTransform.rotation = Quaternion.Slerp(gunTransform.rotation, lookRotation, Time.deltaTime * rotSpeed);
-
-        // Draw a debug line from the gun towards the player
-        Debug.DrawLine(gunTransform.position, playerTransform.position, Color.red);
-    }
-
 
 
     private void InstantlyTurn(Vector3 destination)
@@ -138,6 +116,7 @@ public class navigation_patrol : MonoBehaviour
         Quaternion qDir = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, qDir, Time.deltaTime * rotSpeed);
     }
+
     void Shoot()
     {
         if (Time.time - lastShootTime >= shootingInterval)
