@@ -1,113 +1,150 @@
-// Patrol.cs
 using UnityEngine;
 using UnityEngine.AI;
 
 public class navigation_patrol : MonoBehaviour
 {
-
     public Transform[] points;
     private int destPoint = 0;
-    private Animator animator;
     private NavMeshAgent agent;
-    private Transform player;
-    public float rotSpeed = 10f;
+
+    private Animator animator;
+    public float patrolSpeed = 2.0f;
+    public float chaseSpeed = 5.0f;
+    [SerializeField]
+    public float shootingRange = 20.0f;
+    private Transform playerTransform;
+
     public static bool playerInZone = false;
-    private static readonly int IsRunning = Animator.StringToHash("isRunning");
-    public GameObject bulletPrefab; // Prefab for the bullet/projectile
-    public Transform shootPoint; // Starting point for the bullet (e.g. the end of a gun barrel)
-    public float shootForce = 20f; // Force with which the bullet is shot
-    public float shootingRange = 10f; // The range within which the NPC will shoot the player
+    public float rotSpeed = 10f;
+    public GameObject bulletPrefab; 
+    public Transform shootPoint; 
+    public Transform gunTransform;
+    public float shootingInterval = 1f; // Time in seconds between shots
 
-
+    private float lastShootTime;
 
     void Start()
     {
-        animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
-
-        // Disabling auto-braking allows for continuous movement
-        // between points (ie, the agent doesn't slow down as it
-        // approaches a destination point).
         agent.autoBraking = false;
+
+        animator = GetComponent<Animator>();
+        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
         GotoNextPoint();
     }
 
-
     void GotoNextPoint()
     {
-        // Returns if no points have been set up
         if (points.Length == 0)
             return;
 
-        // Set the agent to go to the currently selected destination.
         agent.destination = points[destPoint].position;
 
-        // This the sample code from the original Unity Manual. 
-        // Choose the next point in the array as the destination,
-        // cycling to the start if necessary.
-        // destPoint = (destPoint + 1) % points.Length;
-
-        // I added the code below.
-        // Randomly pick the next destination
         int newDestPoint = 0;
-
-        // Randomly pick the next destination from the list of destinations.
-        // If the next destination happens to be the current location, try again. 
         do
         {
             newDestPoint = Random.Range(0, points.Length);
         } while (destPoint == newDestPoint);
 
         destPoint = newDestPoint;
-        animator.SetBool(IsRunning, false);  // Ensure NPC is walking while patrolling
     }
+
+    void Update()
+    {
+        if (playerInZone)
+        {
+            FaceTarget(playerTransform.position);  // Turn the entire NPC towards the player
+            AimGunAtPlayer();  // Point the gun directly at the player
+            HandlePlayerInZone();
+            Shoot();
+        }
+        else
+        {
+            HandlePlayerOutOfZone();
+        }
+    }
+
+
+    void HandlePlayerInZone()
+    {
+        FaceTarget(playerTransform.position); // Always face the player when in the zone
+
+        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
+        animator.SetBool("IsShooting", true);
+        animator.SetLayerWeight(1, 1);  // Enables the shooting animation layer
+
+        if (distanceToPlayer <= shootingRange)
+        {
+            StopAgent();
+        }
+        else
+        {
+            ChasePlayer();
+        }
+    }
+
+    public void HandlePlayerOutOfZone()
+    {
+        animator.SetBool("IsShooting", false);
+        animator.SetLayerWeight(1, 0);  // Disables the shooting animation layer
+        animator.SetFloat("Speed", patrolSpeed);
+        agent.speed = patrolSpeed; // Set NavMeshAgent speed to patrolSpeed
+
+        InstantlyTurn(agent.destination);
+
+        if (!agent.pathPending && agent.remainingDistance < 0.5f)
+            GotoNextPoint();
+    }
+
+    void StopAgent()
+    {
+        animator.SetFloat("Speed", 0);
+        agent.isStopped = true; // Stop the agent from moving
+    }
+
+    void ChasePlayer()
+    {
+        animator.SetFloat("Speed", chaseSpeed);
+        agent.speed = chaseSpeed; // Set NavMeshAgent speed to chaseSpeed
+        agent.destination = playerTransform.position;
+        agent.isStopped = false;
+    }
+
+    void FaceTarget(Vector3 targetPosition)
+    {
+        Vector3 direction = (targetPosition - transform.position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotSpeed);
+    }
+    void AimGunAtPlayer()
+    {
+        Vector3 directionToPlayer = playerTransform.position - gunTransform.position;
+        Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+        gunTransform.rotation = Quaternion.Slerp(gunTransform.rotation, lookRotation, Time.deltaTime * rotSpeed);
+
+        // Draw a debug line from the gun towards the player
+        Debug.DrawLine(gunTransform.position, playerTransform.position, Color.red);
+    }
+
+
 
     private void InstantlyTurn(Vector3 destination)
     {
-        //When on target -> dont rotate!
         if ((destination - transform.position).magnitude < 0.1f) return;
 
         Vector3 direction = (destination - transform.position).normalized;
         Quaternion qDir = Quaternion.LookRotation(direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, qDir, Time.deltaTime * rotSpeed);
     }
-
-
-
-    void Update()
+    void Shoot()
     {
-        InstantlyTurn(agent.destination);
-
-        if (playerInZone)
+        if (Time.time - lastShootTime >= shootingInterval)
         {
-            // Ensure the player reference is set for this instance
-            if (player == null)
-            {
-                player = GameObject.FindGameObjectWithTag("Player").transform;
-            }
-
-            // Start chasing the player
-            StartChasing(player);
+            GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
+            Destroy(bullet, 5f); // Optional: Destroy bullet after 5 seconds to save resources
+            lastShootTime = Time.time;
         }
-        else if (!agent.pathPending && agent.remainingDistance < 0.5f)
-        {
-            StopChasing();
-        }
-    }
-
-    public void StartChasing(Transform target)
-    {
-        player = target;
-        agent.destination = player.position;
-        animator.SetBool(IsRunning, true);  // NPC starts running
-    }
-
-    public void StopChasing()
-    {
-        player = null;
-        animator.SetBool(IsRunning, false);  // NPC stops running and goes back to walking
-        GotoNextPoint();
-
     }
 }

@@ -20,7 +20,6 @@ public class ZoneScript : MonoBehaviour
         {
             Debug.Log("Player exited zone");
             navigation_patrol.playerInZone = false;
-            
         }
     }
 }
