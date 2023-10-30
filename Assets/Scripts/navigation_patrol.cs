@@ -15,12 +15,12 @@ public class navigation_patrol : MonoBehaviour
 
     public static bool playerInZone = false;
     public float rotSpeed = 10f;
-    public GameObject bulletPrefab;
-    public Transform shootPoint;
-    public Transform gunTransform;
-    public float shootingInterval = 1f; // Time in seconds between shots
 
-    private float lastShootTime;
+    [SerializeField] private float timer =5;
+    private float bulletTime;
+    public GameObject enemyBullet;
+    public Transform spawnPoint;
+    public float enemySpeed ;
 
     void Start()
     {
@@ -55,7 +55,6 @@ public class navigation_patrol : MonoBehaviour
             FaceTarget(playerTransform.position);  // Turn the entire NPC towards the player
             //AimGunAtPlayer();  // Point the gun directly at the player
             HandlePlayerInZone();
-            Shoot();
         }
         else
         {
@@ -72,6 +71,7 @@ public class navigation_patrol : MonoBehaviour
         if (distanceToPlayer <= shootingRange)
         {
             StopAgent();
+            Shoot();
         }
         else
         {
@@ -119,11 +119,48 @@ public class navigation_patrol : MonoBehaviour
 
     void Shoot()
     {
-        if (Time.time - lastShootTime >= shootingInterval)
+        bulletTime -= Time.deltaTime;
+
+        if (bulletTime > 0) return;
+
+        bulletTime = timer;
+
+        Vector3 start = spawnPoint.position;
+        Vector3 direction = (playerTransform.position - start).normalized;
+
+        Ray shootingRay = new Ray(start, direction);
+        RaycastHit hitInfo;
+
+        Debug.DrawRay(start, direction * shootingRange, Color.red, 2f); // Drawing the ray for visual debugging
+
+        // Instantiate the visual bullet
+        GameObject bulletObj = Instantiate(enemyBullet, spawnPoint.position, Quaternion.LookRotation(direction));
+        Rigidbody bulletRig = bulletObj.GetComponent<Rigidbody>();
+        bulletRig.AddForce(direction * enemySpeed);
+        Destroy(bulletObj, 5f);
+
+        // Use raycasting to check if the shot will hit the player
+        if (Physics.Raycast(shootingRay, out hitInfo, shootingRange))
         {
-            GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
-            Destroy(bullet, 5f); // Optional: Destroy bullet after 5 seconds to save resources
-            lastShootTime = Time.time;
+            if (hitInfo.collider.CompareTag("Player"))
+            {
+                // This means the ray has hit the player, apply damage or any other effect here.
+                hitInfo.collider.GetComponent<PlayerHealth>().TakeDamage(1);
+            }
         }
+    }
+    private void OnEnable()
+    {
+        PlayerHealth.OnPlayerDied += HandlePlayerDeath;
+    }
+
+    private void OnDisable()
+    {
+        PlayerHealth.OnPlayerDied -= HandlePlayerDeath;
+    }
+
+    void HandlePlayerDeath()
+    {
+        // Do something when the player dies, like showing a game over screen
     }
 }

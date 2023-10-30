@@ -2,24 +2,12 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float bulletSpeed = 20f;
-    public int bulletDamage = 10;
-
-    private void Update()
-    {
-        transform.Translate(Vector3.forward * bulletSpeed * Time.deltaTime);
-    }
-
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Bullet hit: " + other.gameObject.name);
         if (other.CompareTag("Player"))
         {
-            // Deal damage to the player here, if you have a health system in place
-            Destroy(gameObject);
-        }
-        else if (!other.CompareTag("Enemy"))
-        {
-            // Optional: Destroy bullet on hitting other obstacles
+            Debug.Log("Player hit by bullet");
             Destroy(gameObject);
         }
     }
