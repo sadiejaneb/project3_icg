@@ -16,7 +16,7 @@ namespace BigRookGames.Weapons
         public GameObject muzzlePosition;
 
         // --- Config ---
-        public bool autoFire;
+        public bool autoFire = false;
         public float shotDelay = .5f;
         public bool rotate = true;
         public float rotationSpeed = .25f;
@@ -25,6 +25,8 @@ namespace BigRookGames.Weapons
         public GameObject scope;
         public bool scopeActive = true;
         private bool lastScopeState;
+       
+
 
         // --- Projectile ---
         [Tooltip("The projectile gameobject to instantiate each time the weapon is fired.")]
@@ -39,7 +41,6 @@ namespace BigRookGames.Weapons
 
         private void Start()
         {
-            gameObject.SetActive(false);
             if (source != null) source.clip = GunShotClip;
             timeLastFired = 0;
             lastScopeState = scopeActive;
@@ -55,7 +56,7 @@ namespace BigRookGames.Weapons
             }
 
             // --- Fires the weapon if the delay time period has passed since the last shot ---
-            if (autoFire && ((timeLastFired + shotDelay) <= Time.time))
+            if (Input.GetButtonDown("Fire1") && ((timeLastFired + shotDelay) <= Time.time))
             {
                 FireWeapon();
             }
