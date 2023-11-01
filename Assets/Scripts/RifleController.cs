@@ -1,0 +1,95 @@
+using UnityEngine;
+
+public class RifleController : MonoBehaviour
+{
+    private WeaponController weaponController;
+    public GameObject bulletPrefab;
+    private bool isReloading = false;
+    private bool isShooting = false;
+    public int gunDamage = 1;
+    public float fireRate = .25f;
+    public float weaponRange = 50f;
+    public Transform gunEnd; // Where the bullet visual is instantiated from
+
+    // Sound-related variables
+    private AudioSource audioSource;
+    public AudioClip shootingSound; // Drag and drop shooting sound in the inspector
+    public AudioClip reloadingSound; // Drag and drop reloading sound in the inspector
+
+    private float nextFire;
+    public Camera fpsCam;
+    public GameObject impactEffect;
+
+
+    private void Start()
+    {
+        weaponController = GetComponentInParent<WeaponController>();
+        audioSource = GetComponent<AudioSource>();
+    }
+
+    private void Update()
+    {
+        if (isReloading || isShooting)
+            return;
+
+        if (Input.GetButtonDown("Fire1") && Time.time > nextFire)
+        {
+            if (weaponController.TryUseRifleAmmo()) // Check with WeaponController if there's ammo to use
+            {
+                FireRifle();
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Reload();
+        }
+    }
+
+    void FireRifle()
+    {
+        isShooting = true;
+
+        nextFire = Time.time + fireRate;
+
+        // Play gunshot sound
+        if (audioSource && shootingSound)
+            audioSource.PlayOneShot(shootingSound);
+
+        // Instantiate bullet for visual effect
+        GameObject bulletInstance = Instantiate(bulletPrefab, gunEnd.position, gunEnd.rotation);
+        Rigidbody bulletRb = bulletInstance.GetComponent<Rigidbody>();
+        if (bulletRb)
+        {
+            float bulletSpeed = 5000f; // Adjust for desired bullet speed
+            bulletRb.AddForce(gunEnd.forward * bulletSpeed);
+        }
+
+        // Raycast shooting
+        Vector3 rayOrigin = fpsCam.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0.0f));
+        RaycastHit hit;
+        if (Physics.Raycast(rayOrigin, fpsCam.transform.forward, out hit, weaponRange))
+        {
+            // Instantiate the impact effect at the point of collision
+            Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+            Debug.Log("Hit: " + hit.transform.name);
+            // Handle hit
+        }
+        isShooting = false;
+    }
+
+    void Reload()
+    {
+        if(weaponController.reserveRifleBullets <= 0 || isReloading || isShooting) 
+        return; 
+        
+        isReloading = true;
+
+        // Play reloading sound
+        if (audioSource && reloadingSound)
+            audioSource.PlayOneShot(reloadingSound);
+
+        weaponController.ReloadRifle(); // Notify the WeaponController to reload
+        isReloading = false;
+    }
+}

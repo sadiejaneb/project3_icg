@@ -12,6 +12,14 @@ TagManager:
   - LevelPart
   - Dummie
   - Enemy
+  - Bullet
+  - Environment
+  - RocketLauncher
+  - Rifle
+  - Ammo
+  - Grenade
+  - LivesImage
+  - BlackScreen
   layers:
   - Default
   - TransparentFX
@@ -19,10 +27,10 @@ TagManager:
   - PostProcessing
   - Water
   - UI
-  - Hands
+  - Bullet
   - Player
   - NPC
-  - 
+  - Environment
   - 
   - 
   - 

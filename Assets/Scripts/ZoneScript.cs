@@ -1,23 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ZoneScript : MonoBehaviour
 {
-    public navigation_patrol npcScript;
-    // Start is called before the first frame update
- void OnTriggerEnter(Collider other)
-{
-    if (other.CompareTag("Player"))
+    void OnTriggerEnter(Collider other)
     {
-        npcScript.StartChasing(other.transform);
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player entered zone");
+            navigation_patrol.playerInZone = true; //alert enemies that player is near
+            AudioManager.Instance.PlayZoneMusic(); // Switch to zone music
+        }
     }
-}
-void OnTriggerExit(Collider other)
-{
-    if (other.CompareTag("Player"))
-    {
-        npcScript.StopChasing();
-    }
-}
 }
