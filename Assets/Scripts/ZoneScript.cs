@@ -7,8 +7,8 @@ public class ZoneScript : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Debug.Log("Player entered zone");
-            navigation_patrol.playerInZone = true;
-           
+            navigation_patrol.playerInZone = true; //alert enemies that player is near
+            AudioManager.Instance.PlayZoneMusic(); // Switch to zone music
         }
     }
 }
