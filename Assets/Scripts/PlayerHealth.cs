@@ -5,6 +5,9 @@ public class PlayerHealth : MonoBehaviour
     public int lives = 3;  // Player's total lives
     public delegate void PlayerDied();  // Delegate for player death event
     public static event PlayerDied OnPlayerDied;  // Event triggered when the player dies
+   
+
+   
 
     // This method gets called when the player is hit by a bullet
     public void TakeDamage(int damageAmount)
@@ -28,4 +31,5 @@ public class PlayerHealth : MonoBehaviour
 
         Debug.Log("Player Died!");
     }
+  
 }

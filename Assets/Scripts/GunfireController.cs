@@ -25,7 +25,8 @@ namespace BigRookGames.Weapons
         public GameObject scope;
         public bool scopeActive = true;
         private bool lastScopeState;
-       
+        private WeaponController weaponController;
+
 
 
         // --- Projectile ---
@@ -41,6 +42,7 @@ namespace BigRookGames.Weapons
 
         private void Start()
         {
+            weaponController = GetComponentInParent<WeaponController>();
             if (source != null) source.clip = GunShotClip;
             timeLastFired = 0;
             lastScopeState = scopeActive;
@@ -76,6 +78,7 @@ namespace BigRookGames.Weapons
         /// </summary>
         public void FireWeapon()
         {
+            if (weaponController.rocketLauncherAmmo <= 0) return;
             // --- Keep track of when the weapon is being fired ---
             timeLastFired = Time.time;
 
@@ -122,10 +125,8 @@ namespace BigRookGames.Weapons
                         Destroy(newAS.gameObject, 4);
                     }
                 }
+                weaponController.UseAmmo();  // Consume ammo
             }
-
-            // --- Insert custom code here to shoot projectile or hitscan from weapon ---
-
         }
 
         private void ReEnableDisabledProjectile()

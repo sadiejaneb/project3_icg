@@ -21,10 +21,14 @@ public class navigation_patrol : MonoBehaviour
     public GameObject enemyBullet;
     public Transform spawnPoint;
     public float enemySpeed ;
+    public AudioClip gunFireSound;
+    private AudioSource audioSource;
+
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        audioSource = GetComponent<AudioSource>();
         agent.autoBraking = false;
 
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
@@ -127,12 +131,16 @@ public class navigation_patrol : MonoBehaviour
 
         Vector3 start = spawnPoint.position;
         Vector3 direction = (playerTransform.position - start).normalized;
+        // Play the gun firing sound
+        if (gunFireSound && audioSource)
+        {
+            audioSource.PlayOneShot(gunFireSound);
+        }
 
         Ray shootingRay = new Ray(start, direction);
         RaycastHit hitInfo;
 
-        Debug.DrawRay(start, direction * shootingRange, Color.red, 2f); // Drawing the ray for visual debugging
-
+       
         // Instantiate the visual bullet
         GameObject bulletObj = Instantiate(enemyBullet, spawnPoint.position, Quaternion.LookRotation(direction));
         Rigidbody bulletRig = bulletObj.GetComponent<Rigidbody>();

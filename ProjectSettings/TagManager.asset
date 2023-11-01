@@ -18,6 +18,8 @@ TagManager:
   - Rifle
   - Ammo
   - Grenade
+  - LivesImage
+  - BlackScreen
   layers:
   - Default
   - TransparentFX
