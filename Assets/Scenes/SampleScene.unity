@@ -10408,6 +10408,11 @@ PrefabInstance:
         type: 3}
     - target: {fileID: 3647746623597711632, guid: cfd8eb60e067c6e40b9de9363c787e1d,
         type: 3}
+      propertyPath: impactEffect
+      value: 
+      objectReference: {fileID: 100002, guid: 3b1513bcb86426b4795879be6a128ed7, type: 3}
+    - target: {fileID: 3647746623597711632, guid: cfd8eb60e067c6e40b9de9363c787e1d,
+        type: 3}
       propertyPath: shootingSound
       value: 
       objectReference: {fileID: 8300000, guid: 1b145bcffd767854fb0c71c37678ebaa, type: 3}
