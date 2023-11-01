@@ -5210,6 +5210,12 @@ MonoBehaviour:
   blackScreenCanvasGroup: {fileID: 673742687}
   gameOverText: {fileID: 928474591}
   youWinText: {fileID: 796219080}
+  livesSprites:
+  - {fileID: 21300000, guid: 26130113466291742a92240a87e55421, type: 3}
+  - {fileID: 21300000, guid: afe7812d373713f47b812497831af464, type: 3}
+  - {fileID: 21300000, guid: f67e67b2388fe944b862d060540bfc25, type: 3}
+  - {fileID: 21300000, guid: e47b9624dbdc2a942be227ddf9217fe4, type: 3}
+  livesImage: {fileID: 896503829}
 --- !u!4 &1109070698
 Transform:
   m_ObjectHideFlags: 0

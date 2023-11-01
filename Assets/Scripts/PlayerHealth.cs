@@ -8,6 +8,9 @@ public class PlayerHealth : MonoBehaviour
 
     public AudioClip damageSound;  // Drag the damage sound clip here in the inspector
     private AudioSource audioSource;  // Reference to the AudioSource component
+    public delegate void PlayerTookDamage(int currentLives);
+    public static event PlayerTookDamage OnPlayerTookDamage;
+
 
     private void Start()
     {
@@ -25,6 +28,8 @@ public class PlayerHealth : MonoBehaviour
     public void TakeDamage(int damageAmount)
     {
         lives -= damageAmount;
+        // Inform any listeners that the player took damage
+        OnPlayerTookDamage?.Invoke(lives);
 
         // Play the damage sound
         PlayDamageSound();
