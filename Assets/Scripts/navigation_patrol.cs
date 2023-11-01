@@ -23,6 +23,8 @@ public class navigation_patrol : MonoBehaviour
     public float enemySpeed ;
     public AudioClip gunFireSound;
     private AudioSource audioSource;
+    public GameObject bulletImpactEffect;  // Drag your Particle System prefab here in the Unity editor
+
 
 
     void Start()
@@ -154,6 +156,12 @@ public class navigation_patrol : MonoBehaviour
             {
                 // This means the ray has hit the player, apply damage or any other effect here.
                 hitInfo.collider.GetComponent<PlayerHealth>().TakeDamage(1);
+            }
+         
+            if (bulletImpactEffect != null)
+            {
+                GameObject impact = Instantiate(bulletImpactEffect, hitInfo.point, Quaternion.LookRotation(hitInfo.normal));
+                Destroy(impact, 5f);  
             }
         }
     }

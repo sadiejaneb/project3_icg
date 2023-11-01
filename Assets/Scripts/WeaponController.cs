@@ -10,7 +10,10 @@ public class WeaponController : MonoBehaviour
     public GameObject equippedRifle;
     private GameObject currentWeapon;
     private int currentWeaponIndex = 0;
-    public int rocketLauncherAmmo = 0;
+    public int rocketLauncherAmmo = 0; // Amount of grenades the player has in rocket launcher
+    public int reserveRocketAmmo = 0; // Amount of grenades the player has in reserve
+    public const int maxReserveRocketAmmo = 3; // Maximum grenades player can hold in reserve
+
     public int maxBulletsPerMagazine = 6; // Max bullets that can be loaded into the rifle
     private int currentRifleBullets = 0; // Bullets currently in the rifle (magazine)
     public int reserveRifleBullets = 0; // Bullets in reserve
@@ -54,7 +57,12 @@ public class WeaponController : MonoBehaviour
         }
         else if (other.CompareTag("Grenade"))
         {
-            rocketLauncherAmmo++;  // Add ammo as per your requirements
+            reserveRocketAmmo += 1;
+            reserveRocketAmmo = Mathf.Min(reserveRocketAmmo, maxReserveRocketAmmo);
+            if (rocketLauncherAmmo == 0) // Auto-reload if empty
+            {
+                TryReloadRocketLauncher();
+            }
             Destroy(other.gameObject);
         }
         else if (other.CompareTag("Ammo"))
@@ -103,6 +111,20 @@ public class WeaponController : MonoBehaviour
         {
             rocketLauncherScript.FireWeapon();
             rocketLauncherAmmo--;
+
+            // Check for reload if empty
+            if (rocketLauncherAmmo == 0)
+            {
+                TryReloadRocketLauncher();
+            }
+        }
+    }
+    public void TryReloadRocketLauncher()
+    {
+        if (rocketLauncherAmmo == 0 && reserveRocketAmmo > 0)
+        {
+            rocketLauncherAmmo++;
+            reserveRocketAmmo--;
         }
     }
     public bool CanFire()
@@ -161,6 +183,7 @@ public class WeaponController : MonoBehaviour
     {
         GUI.Label(new Rect(10, 10, 250, 20), "Rocket Launcher Ammo: " + rocketLauncherAmmo);
         GUI.Label(new Rect(10, 30, 250, 20), "Rifle Ammo Reserve: " + reserveRifleBullets);
-        GUI.Label(new Rect(10, 40, 250, 20), "Rifle Ammo: " + currentRifleBullets);
+        GUI.Label(new Rect(10, 50, 250, 20), "Rifle Ammo: " + currentRifleBullets);
+        GUI.Label(new Rect(10, 60, 250, 20), "Rocket Launcher Reserve Ammo: " + reserveRocketAmmo);
     }
 }

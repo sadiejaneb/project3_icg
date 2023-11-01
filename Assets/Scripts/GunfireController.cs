@@ -69,6 +69,22 @@ namespace BigRookGames.Weapons
                 lastScopeState = scopeActive;
                 scope.SetActive(scopeActive);
             }
+            // Check for reload input
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                TryReloadRocketLauncher();
+            }
+        }
+        private void TryReloadRocketLauncher()
+        {
+            if (weaponController && weaponController.rocketLauncherAmmo == 0 && weaponController.reserveRocketAmmo > 0)
+            {
+                weaponController.TryReloadRocketLauncher();
+                if (reloadSource && ReloadClip)
+                {
+                    reloadSource.PlayOneShot(ReloadClip);
+                }
+            }
         }
 
         /// <summary>
