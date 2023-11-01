@@ -14,8 +14,9 @@ public class WeaponController : MonoBehaviour
     public int maxBulletsPerMagazine = 6; // Max bullets that can be loaded into the rifle
     private int currentRifleBullets = 0; // Bullets currently in the rifle (magazine)
     public int reserveRifleBullets = 0; // Bullets in reserve
-    public int maxReserveRifleBullets = 20;
 
+    public int maxReserveRifleBullets = 20;
+    public int currentAmmo; // Current ammo in the gun
 
     public GunfireController rocketLauncherScript;
 
@@ -61,6 +62,12 @@ public class WeaponController : MonoBehaviour
             Debug.Log("Ammo collected");
             reserveRifleBullets += 6;
             reserveRifleBullets = Mathf.Min(reserveRifleBullets, maxReserveRifleBullets);  // Ensure we don't exceed the cap // Add ammo as per your requirements
+                                                                                           // Check if the current weapon is the rifle and try to reload it if it has 0 ammo
+            RifleController rifle = currentWeapon.GetComponent<RifleController>(); // Assuming currentWeapon is your active weapon and you have a reference to it
+            if (rifle)
+            {
+                TryReloadRifle();
+            }
             Destroy(other.gameObject);
         }
     }
@@ -122,6 +129,13 @@ public class WeaponController : MonoBehaviour
     {
         // This function can be called when the player picks up ammo.
         reserveRifleBullets += count;
+    }
+    public void TryReloadRifle()
+    {
+        if (currentAmmo == 0 && reserveRifleBullets > 0) // Assuming you have a way to access or check reserveRifleBullets
+        {
+            ReloadRifle();
+        }
     }
     // Called by RifleController to reload
     public void ReloadRifle()
