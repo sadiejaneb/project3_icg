@@ -10,7 +10,7 @@ public class navigation_patrol : MonoBehaviour
     public float patrolSpeed = 2.0f;
     public float chaseSpeed = 5.0f;
     [SerializeField]
-    public float shootingRange = 20.0f;
+    public float shootingRange = 30.0f;
     private Transform playerTransform;
 
     public static bool playerInZone = false;

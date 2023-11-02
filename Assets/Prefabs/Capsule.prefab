@@ -154,13 +154,13 @@ MonoBehaviour:
   - {fileID: 0}
   patrolSpeed: 2
   chaseSpeed: 5
-  shootingRange: 20
+  shootingRange: 30
   rotSpeed: 10
   timer: 1
   enemyBullet: {fileID: 5005254976791782789, guid: a3b61fdd0b8936346ba947595a567b61,
     type: 3}
   spawnPoint: {fileID: 4485382855696023418}
-  enemySpeed: 5000
+  enemySpeed: 3000
   gunFireSound: {fileID: 8300000, guid: 8b76cff51a7d7e844b0adf5da4371ec6, type: 3}
   bulletImpactEffect: {fileID: 100002, guid: 3b1513bcb86426b4795879be6a128ed7, type: 3}
 --- !u!82 &78610241771260833

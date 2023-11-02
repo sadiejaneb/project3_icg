@@ -11,4 +11,11 @@ public class WinZone : MonoBehaviour
             GameManager.Instance.PlayerEnteredWinZone();
         }
     }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player")) // Assuming your player has a "Player" tag
+        {
+            GameManager.Instance.PlayerExitedWinZone();
+        }
+    }
 }

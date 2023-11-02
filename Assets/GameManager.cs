@@ -37,6 +37,9 @@ public class GameManager : MonoBehaviour
         playerInWinZone = true;
         CheckWinCondition();
     }
+    public void PlayerExitedWinZone() {
+        playerInWinZone = false;
+    }
 
     void CheckWinCondition()
     {
