@@ -73,8 +73,14 @@ public class RifleController : MonoBehaviour
             // Instantiate the impact effect at the point of collision
             Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
             Debug.Log("Hit: " + hit.transform.name);
-            // Handle hit
-        }
+            // Check if the hit object has the NPCHealth script
+            NPCHealth npcHealth = hit.transform.GetComponent<NPCHealth>();
+            if (npcHealth != null)
+            {
+                npcHealth.TakeDamage(1); // 1 is the damage amount for a rifle bullet
+            }
+ 
+    }
         isShooting = false;
     }
 

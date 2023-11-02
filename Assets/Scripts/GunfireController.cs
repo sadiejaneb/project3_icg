@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using System.Collections;
 namespace BigRookGames.Weapons
 {
     public class GunfireController : MonoBehaviour
@@ -26,7 +26,7 @@ namespace BigRookGames.Weapons
         public bool scopeActive = true;
         private bool lastScopeState;
         private WeaponController weaponController;
-
+    
 
 
         // --- Projectile ---
@@ -75,6 +75,7 @@ namespace BigRookGames.Weapons
                 TryReloadRocketLauncher();
             }
         }
+
         private void TryReloadRocketLauncher()
         {
             if (weaponController && weaponController.rocketLauncherAmmo == 0 && weaponController.reserveRocketAmmo > 0)
@@ -144,6 +145,7 @@ namespace BigRookGames.Weapons
                 weaponController.UseAmmo();  // Consume ammo
             }
         }
+
 
         private void ReEnableDisabledProjectile()
         {

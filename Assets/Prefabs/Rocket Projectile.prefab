@@ -193,6 +193,7 @@ GameObject:
   - component: {fileID: 6200599305899437519}
   - component: {fileID: 3763486774271697615}
   - component: {fileID: 4090537981192197469}
+  - component: {fileID: -6866716568808414475}
   m_Layer: 0
   m_Name: Rocket Projectile
   m_TagString: Grenade
@@ -263,7 +264,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!135 &4090537981192197469
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -279,12 +280,26 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-6866716568808414475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9069157159324787765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29db7437e9b05564c91ace49c143d0b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionRadius: 3
+  explosionDamage: 3
 --- !u!1001 &7354411395680345345
 PrefabInstance:
   m_ObjectHideFlags: 0
