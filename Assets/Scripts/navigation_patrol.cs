@@ -155,7 +155,7 @@ public class navigation_patrol : MonoBehaviour
             if (hitInfo.collider.CompareTag("Player"))
             {
                 // This means the ray has hit the player, apply damage or any other effect here.
-                hitInfo.collider.GetComponent<PlayerHealth>().TakeDamage(1);
+                hitInfo.collider.GetComponent<PlayerHealth>().TakeDamage();
             }
          
             if (bulletImpactEffect != null)
@@ -164,6 +164,9 @@ public class navigation_patrol : MonoBehaviour
                 Destroy(impact, 5f);  
             }
         }
+    }
+    public void stopShooting() {
+        playerInZone = false;
     }
     private void OnEnable()
     {

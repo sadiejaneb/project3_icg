@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using BigRookGames.Weapons;
-
+using UnityEngine.UI; // Required for UI components
 public class WeaponController : MonoBehaviour
 {
     List<GameObject> collectedWeapons = new List<GameObject>();
@@ -22,9 +22,11 @@ public class WeaponController : MonoBehaviour
     public int currentAmmo; // Current ammo in the gun
 
     public GunfireController rocketLauncherScript;
+    private UIManager uiManager;
 
     private void Start()
     {
+        uiManager = FindObjectOfType<UIManager>();
         // Deactivate both weapons on player start
         equippedRocketLauncher.SetActive(false);
         equippedRifle.SetActive(false);
@@ -33,6 +35,14 @@ public class WeaponController : MonoBehaviour
         // Use direct references to populate weaponMap
         weaponMap["Rifle"] = equippedRifle;
         weaponMap["RocketLauncher"] = equippedRocketLauncher;
+    }
+    // Call this method whenever you need to update the ammo count on the UI
+    public void RefreshAmmoUI()
+    {
+        if (uiManager != null)
+        {
+            uiManager.UpdateRocketLauncherAmmo(rocketLauncherAmmo);
+        }
     }
 
     private void Update()
@@ -45,7 +55,6 @@ public class WeaponController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Collided with: " + other.gameObject.name);
         if (weaponMap.ContainsKey(other.tag))
         {
             if (!collectedWeapons.Contains(weaponMap[other.tag]))
@@ -64,19 +73,25 @@ public class WeaponController : MonoBehaviour
                 TryReloadRocketLauncher();
             }
             Destroy(other.gameObject);
+            // After updating the ammo count, refresh the UI
+            RefreshReserveRocketAmmoUI();
         }
         else if (other.CompareTag("Ammo"))
         {
-            Debug.Log("Ammo collected");
             reserveRifleBullets += 6;
             reserveRifleBullets = Mathf.Min(reserveRifleBullets, maxReserveRifleBullets);  // Ensure we don't exceed the cap // Add ammo as per your requirements
-                                                                                           // Check if the current weapon is the rifle and try to reload it if it has 0 ammo
-            RifleController rifle = currentWeapon.GetComponent<RifleController>(); // Assuming currentWeapon is your active weapon and you have a reference to it
-            if (rifle)
-            {
+                                                                                           if (currentRifleBullets == 0) {
+            
                 TryReloadRifle();
-            }
+                                                                                           }
+            
             Destroy(other.gameObject);
+            RefreshReserveRifleAmmoUI();
+        }
+        if (other.CompareTag("Rifle") || other.CompareTag("RocketLauncher"))
+        {
+            ActivateWeapon(weaponMap[other.tag]);
+            uiManager.SetWeaponUIActive(other.tag); // Make the UI image visible
         }
     }
 
@@ -90,6 +105,7 @@ public class WeaponController : MonoBehaviour
         // Activate the desired weapon
         weaponToActivate.SetActive(true);
         currentWeapon = weaponToActivate; // Set the current weapon
+                                          // Call the UIManager to update the weapon UI based on the weapon's tag
     }
 
     private void SwitchWeapon()
@@ -111,6 +127,7 @@ public class WeaponController : MonoBehaviour
         {
             rocketLauncherScript.FireWeapon();
             rocketLauncherAmmo--;
+            RefreshRocketLauncherAmmoUI(); // Update the UI after using ammo
 
             // Check for reload if empty
             if (rocketLauncherAmmo == 0)
@@ -125,7 +142,9 @@ public class WeaponController : MonoBehaviour
         {
             rocketLauncherAmmo++;
             reserveRocketAmmo--;
+            RefreshRocketLauncherAmmoUI(); // Update the UI after using ammo
         }
+        // After updating the ammo count, refresh the UI
     }
     public bool CanFire()
     {
@@ -136,6 +155,7 @@ public class WeaponController : MonoBehaviour
         if (rocketLauncherAmmo > 0)
         {
             rocketLauncherAmmo--;
+            RefreshRocketLauncherAmmoUI(); // Update the UI after using ammo
         }
     }
     public bool TryUseRifleAmmo()
@@ -143,6 +163,7 @@ public class WeaponController : MonoBehaviour
         if (currentRifleBullets > 0)
         {
             currentRifleBullets--;
+            RefreshRifleAmmoUI();
             return true;
         }
         return false;
@@ -177,13 +198,40 @@ public class WeaponController : MonoBehaviour
             currentRifleBullets += reserveRifleBullets;
             reserveRifleBullets = 0;
         }
+        RefreshRifleAmmoUI();
+        RefreshReserveRifleAmmoUI();
+    }
+    // Inside the WeaponController class
+
+    public void RefreshRocketLauncherAmmoUI()
+    {
+        if (uiManager != null)
+        {
+            uiManager.UpdateRocketLauncherAmmo(rocketLauncherAmmo);
+        }
+    }
+    // Call this method whenever you need to update the rifle ammo count on the UI
+    public void RefreshRifleAmmoUI()
+    {
+        if (uiManager != null)
+        {
+            uiManager.UpdateRifleAmmo(currentRifleBullets);
+        }
+    }
+    public void RefreshReserveRifleAmmoUI()
+    {
+        if (uiManager != null)
+        {
+            uiManager.UpdateReserveRifleAmmo(reserveRifleBullets);
+        }
     }
 
-    private void OnGUI()
+    // Call this method whenever you need to update the reserve rocket ammo count on the UI
+    public void RefreshReserveRocketAmmoUI()
     {
-        GUI.Label(new Rect(10, 10, 250, 20), "Rocket Launcher Ammo: " + rocketLauncherAmmo);
-        GUI.Label(new Rect(10, 30, 250, 20), "Rifle Ammo Reserve: " + reserveRifleBullets);
-        GUI.Label(new Rect(10, 50, 250, 20), "Rifle Ammo: " + currentRifleBullets);
-        GUI.Label(new Rect(10, 60, 250, 20), "Rocket Launcher Reserve Ammo: " + reserveRocketAmmo);
+        if (uiManager != null)
+        {
+            uiManager.UpdateReserveRocketAmmo(reserveRocketAmmo);
+        }
     }
 }

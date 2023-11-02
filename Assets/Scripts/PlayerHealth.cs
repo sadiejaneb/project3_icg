@@ -10,10 +10,13 @@ public class PlayerHealth : MonoBehaviour
     private AudioSource audioSource;  // Reference to the AudioSource component
     public delegate void PlayerTookDamage(int currentLives);
     public static event PlayerTookDamage OnPlayerTookDamage;
+    public UIManager uiManager;
+    private navigation_patrol navPatrolScript;
 
 
     private void Start()
     {
+        navPatrolScript = FindObjectOfType<navigation_patrol>();
         // Get the AudioSource component
         audioSource = GetComponent<AudioSource>();
         // Ensure that the audio source exists
@@ -25,32 +28,36 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // This method gets called when the player is hit by a bullet
-    public void TakeDamage(int damageAmount)
+    public void TakeDamage()
+
     {
-        lives -= damageAmount;
-        // Inform any listeners that the player took damage
+        lives--;
         OnPlayerTookDamage?.Invoke(lives);
 
-        // Play the damage sound
         PlayDamageSound();
 
         if (lives <= 0)
         {
-            lives = 0;
             Die();
+            navPatrolScript.stopShooting();
         }
     }
 
+
+
     void Die()
     {
-        // Handle player death here
-        // For example, you can disable player movement, play a death animation, etc.
-
-        // Trigger the OnPlayerDied event
-        OnPlayerDied?.Invoke();
-
-        Debug.Log("Player Died!");
+        Debug.Log("Player is dead");  // This will confirm if Die() is being called
+        if (uiManager != null)
+        {
+            uiManager.GameOver();
+        }
+        else
+        {
+            Debug.LogWarning("UIManager reference is not set on PlayerHealth.");
+        }
     }
+
 
     void PlayDamageSound()
     {
