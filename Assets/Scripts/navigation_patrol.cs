@@ -19,18 +19,18 @@ public class navigation_patrol : MonoBehaviour
 
     [SerializeField] private float timer =5;
     private float bulletTime;
-    public GameObject enemyBullet;
+    public GameObject bullet;
     public Transform spawnPoint;
     public float enemySpeed ;
-    public AudioClip gunFireSound;
     public AudioClip yellSoundNPC;
     private AudioSource audioSource;
-    public GameObject bulletImpactEffect;  // Drag your Particle System prefab here in the Unity editor
-
+    private NPCGunSounds gunSoundScript;
+ 
 
 
     void Start()
     {
+        NPCGunSounds gunSoundScript = GetComponent<NPCGunSounds>();
         agent = GetComponent<NavMeshAgent>();
         audioSource = GetComponent<AudioSource>();
         agent.autoBraking = false;
@@ -148,18 +148,20 @@ public class navigation_patrol : MonoBehaviour
 
         Vector3 start = spawnPoint.position;
         Vector3 direction = (playerTransform.position - start).normalized;
-        // Play the gun firing sound
-        if (gunFireSound && audioSource)
+
+        if (gunSoundScript != null)
         {
-            audioSource.PlayOneShot(gunFireSound);
+            Debug.Log("playGunFireSound called");
+            gunSoundScript.playGunFireSound();
         }
+        
 
         Ray shootingRay = new Ray(start, direction);
         RaycastHit hitInfo;
 
        
         // Instantiate the visual bullet
-        GameObject bulletObj = Instantiate(enemyBullet, spawnPoint.position, Quaternion.LookRotation(direction));
+        GameObject bulletObj = Instantiate(bullet, spawnPoint.position, Quaternion.LookRotation(direction));
         Rigidbody bulletRig = bulletObj.GetComponent<Rigidbody>();
         bulletRig.AddForce(direction * enemySpeed);
         Destroy(bulletObj, 5f);
@@ -173,11 +175,7 @@ public class navigation_patrol : MonoBehaviour
                 hitInfo.collider.GetComponent<PlayerHealth>().TakeDamage();
             }
          
-            if (bulletImpactEffect != null)
-            {
-                GameObject impact = Instantiate(bulletImpactEffect, hitInfo.point, Quaternion.LookRotation(hitInfo.normal));
-                Destroy(impact, 5f);  
-            }
+            
         }
     }
     public void stopShooting() {
