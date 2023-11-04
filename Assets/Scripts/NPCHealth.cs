@@ -14,28 +14,34 @@ public class NPCHealth : MonoBehaviour
     {
         navigationPatrol = GetComponent<navigation_patrol>();
     }
-  
+
 
     public void TakeDamage(int amount)
     {
-        
+        if (health >0) {
         health -= amount;
-
         navigationPatrol.playDamageSound();
+        }
 
         if (health <= 0)
         {
-            navigationPatrol.playDamageSound();
-            GameManager.Instance.NPCDied();
-            Die();
+            StartCoroutine(DeathSound());
         }
     }
-
-
-
-    void Die()
+    IEnumerator DeathSound()
     {
+        // Play the death sound
+        navigationPatrol.playDamageSound();
+        // Wait until the clip has finished playing
+        float soundDuration = navigationPatrol.playDeathSound();
+        yield return new WaitForSeconds(soundDuration);
+        Die();
+    }
+    private void Die() {
+        // Notify the GameManager that the NPC has died
+        GameManager.Instance.NPCDied();
+
         // Logic to handle NPC's death...
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 }

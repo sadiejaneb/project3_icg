@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
     public int totalNPCs = 2;
     public UIManager uiManager;
 
-
     void Awake()
     {
         if (Instance == null)
@@ -19,10 +18,6 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-        }
-        if (uiManager == null)
-        {
-            uiManager = FindObjectOfType<UIManager>();
         }
     }
 
@@ -37,11 +32,13 @@ public class GameManager : MonoBehaviour
         playerInWinZone = true;
         CheckWinCondition();
     }
-    public void PlayerExitedWinZone() {
+
+    public void PlayerExitedWinZone()
+    {
         playerInWinZone = false;
     }
 
-    void CheckWinCondition()
+    private void CheckWinCondition()
     {
         if (deadNPCs >= totalNPCs && playerInWinZone)
         {
@@ -49,11 +46,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void WinGame()
+    private void WinGame()
     {
         uiManager.YouWin();
     }
+
 }
-
-
-
