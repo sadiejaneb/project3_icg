@@ -16,15 +16,26 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI rifleAmmoText;
     public TextMeshProUGUI reserveRifleAmmoText; 
     public TextMeshProUGUI reserveRocketAmmoText;
-  
+    [SerializeField] private TextMeshProUGUI deadNPCsText;
+
 
     private void Awake()
     {
-        PlayerHealth.OnPlayerTookDamage += UpdateLives; // Subscribe to player damage event
+        // Subscribe to player damage event
+        PlayerHealth.OnPlayerTookDamage += UpdateLives;
     }
+
 
     private void Start()
     {
+        if (GameManager.Instance != null)
+        {
+            UpdateDeadNPCsCounter(GameManager.Instance.deadNPCs);
+        }
+        else
+        {
+            Debug.LogError("GameManager.Instance is null. Make sure GameManager is initialized before UIManager.");
+        }
         // Deactivate all weapon UI images
         if (rifleUIImage) rifleUIImage.gameObject.SetActive(false);
         if (rocketLauncherUIImage) rocketLauncherUIImage.gameObject.SetActive(false);
@@ -82,6 +93,13 @@ public class UIManager : MonoBehaviour
         if (livesImage != null && livesSprites != null && currentLives >= 0 && currentLives < livesSprites.Length)
         {
             livesImage.sprite = livesSprites[currentLives];
+        }
+    }
+    public void UpdateDeadNPCsCounter(int deadNPCs)
+    {
+        if (deadNPCsText != null)
+        {
+            deadNPCsText.text = "Kills: " + deadNPCs;
         }
     }
     public void SetWeaponUIActive(string weaponTag)

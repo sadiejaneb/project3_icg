@@ -24,8 +24,10 @@ public class GameManager : MonoBehaviour
     public void NPCDied()
     {
         deadNPCs++;
+        uiManager.UpdateDeadNPCsCounter(deadNPCs);
         CheckWinCondition();
     }
+
 
     public void PlayerEnteredWinZone()
     {
