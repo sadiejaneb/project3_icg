@@ -56,8 +56,11 @@ public class RifleController : MonoBehaviour
         if (audioSource && shootingSound)
             audioSource.PlayOneShot(shootingSound);
 
-        // Instantiate bullet for visual effect
-        GameObject bulletInstance = Instantiate(bulletPrefab, gunEnd.position, gunEnd.rotation);
+        // Adjust the bullet's rotation by creating a new Quaternion rotation that adds 90 degrees on the X-axis
+        Quaternion bulletRotation = gunEnd.rotation * Quaternion.Euler(90, 0, 0);
+
+        // Instantiate bullet with the adjusted rotation
+        GameObject bulletInstance = Instantiate(bulletPrefab, gunEnd.position, bulletRotation);
         Rigidbody bulletRb = bulletInstance.GetComponent<Rigidbody>();
         if (bulletRb)
         {
