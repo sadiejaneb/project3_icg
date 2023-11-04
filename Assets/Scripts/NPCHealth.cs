@@ -5,32 +5,33 @@ using UnityEngine;
 public class NPCHealth : MonoBehaviour
 {
     private int health = 3;
+   
+    [SerializeField]
 
-    public AudioClip damageSound;  // Drag the sound clip in the inspector
-    private AudioSource audioSource;  // Reference to the audio source component
+    private navigation_patrol navigationPatrol;
 
     private void Start()
     {
-        // Assuming AudioSource component is attached to the same GameObject as this script
-        audioSource = GetComponent<AudioSource>();
+        navigationPatrol = GetComponent<navigation_patrol>();
     }
+  
 
     public void TakeDamage(int amount)
     {
+        
         health -= amount;
 
-        // Play the damage sound
-        if (audioSource && damageSound)
-        {
-            audioSource.PlayOneShot(damageSound);
-        }
+        navigationPatrol.playDamageSound();
 
         if (health <= 0)
         {
+            navigationPatrol.playDamageSound();
             GameManager.Instance.NPCDied();
             Die();
         }
     }
+
+
 
     void Die()
     {

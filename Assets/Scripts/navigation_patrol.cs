@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 public class navigation_patrol : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class navigation_patrol : MonoBehaviour
     public Transform spawnPoint;
     public float enemySpeed ;
     public AudioClip gunFireSound;
+    public AudioClip yellSoundNPC;
     private AudioSource audioSource;
     public GameObject bulletImpactEffect;  // Drag your Particle System prefab here in the Unity editor
 
@@ -67,6 +69,19 @@ public class navigation_patrol : MonoBehaviour
             HandlePlayerOutOfZone();
         }
     }
+    public void playDamageSound()
+    {
+        Debug.Log("playDamageSound called");
+        // Assuming yellSoundNPC is shorter, delay the damageSoundNPC by its length
+        StartCoroutine(DelayedPlayDamageSound());
+    }
+
+    IEnumerator DelayedPlayDamageSound()
+    {
+        yield return new WaitForSeconds(0.5f);
+        audioSource.PlayOneShot(yellSoundNPC);
+    }
+
 
     void HandlePlayerInZone()
     {
@@ -167,19 +182,5 @@ public class navigation_patrol : MonoBehaviour
     }
     public void stopShooting() {
         playerInZone = false;
-    }
-    private void OnEnable()
-    {
-        PlayerHealth.OnPlayerDied += HandlePlayerDeath;
-    }
-
-    private void OnDisable()
-    {
-        PlayerHealth.OnPlayerDied -= HandlePlayerDeath;
-    }
-
-    void HandlePlayerDeath()
-    {
-        // Do something when the player dies, like showing a game over screen
     }
 }

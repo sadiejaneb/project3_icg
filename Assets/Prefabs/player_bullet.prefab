@@ -148,5 +148,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b6cf80145d36784090708e9bb36916c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impactSound: {fileID: 0}
-  impactEffect: {fileID: 0}
+  impactSound: {fileID: 8300000, guid: c215ed7044d52f246aa05a3db51c28ab, type: 3}
+  impactEffect: {fileID: 100002, guid: 3b1513bcb86426b4795879be6a128ed7, type: 3}

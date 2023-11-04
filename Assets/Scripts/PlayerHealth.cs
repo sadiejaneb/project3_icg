@@ -5,9 +5,11 @@ public class PlayerHealth : MonoBehaviour
     public int lives = 3;  // Player's total lives
     public delegate void PlayerDied();  // Delegate for player death event
     public static event PlayerDied OnPlayerDied;  // Event triggered when the player dies
+    private AudioSource audioSource;  // Reference to the AudioSource component
 
     public AudioClip damageSound;  // Drag the damage sound clip here in the inspector
-    private AudioSource audioSource;  // Reference to the AudioSource component
+    public AudioClip damageYell;
+
     public delegate void PlayerTookDamage(int currentLives);
     public static event PlayerTookDamage OnPlayerTookDamage;
     public UIManager uiManager;
@@ -63,7 +65,9 @@ public class PlayerHealth : MonoBehaviour
     {
         if (damageSound && audioSource)
         {
+            audioSource.PlayOneShot(damageYell);
             audioSource.PlayOneShot(damageSound);
         }
     }
+
 }
