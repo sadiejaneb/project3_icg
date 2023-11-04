@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class TreeSpawner : MonoBehaviour
@@ -7,55 +8,62 @@ public class TreeSpawner : MonoBehaviour
     {
         public GameObject prefab;
         public int quantity;
+        public float checkRadius = 1.0f; // Set to the tree's approximate radius
     }
 
     public TreeType[] treeTypes; // Assign in the inspector with your tree prefabs and quantities
+    public Collider[] obstacleColliders; // Assign all colliders that trees should not spawn on
     public Collider playAreaCollider;
     public Vector3 spawnAreaMin;
     public Vector3 spawnAreaMax;
+    public float spawnDelay = 0.1f; // Delay between spawns to prevent freezing
 
     private void Start()
     {
         foreach (var treeType in treeTypes)
         {
-            SpawnTrees(treeType.prefab, treeType.quantity);
+            StartCoroutine(SpawnTrees(treeType));
         }
+        
     }
 
-    void SpawnTrees(GameObject treePrefab, int quantity)
+    private IEnumerator SpawnTrees(TreeType treeType)
     {
         int spawnedTrees = 0;
-        float checkRadius = 1.0f; // Change this to match the approximate radius of your trees
 
-        while (spawnedTrees < quantity)
+        while (spawnedTrees < treeType.quantity)
         {
-            Vector3 randomPosition = new Vector3(
-                Random.Range(spawnAreaMin.x, spawnAreaMax.x),
-                Random.Range(spawnAreaMin.y, spawnAreaMax.y),
-                Random.Range(spawnAreaMin.z, spawnAreaMax.z)
-            );
+            Vector3 randomPosition = GetRandomPosition(spawnAreaMin, spawnAreaMax);
 
-            // Check if the position is inside the play area or intersecting other colliders
-            if (!playAreaCollider.bounds.Contains(randomPosition) && !IsCollidingWithObjects(randomPosition, checkRadius))
+            if (!playAreaCollider.bounds.Contains(randomPosition) && !IsCollidingWithObstacles(randomPosition, treeType.checkRadius))
             {
-                Instantiate(treePrefab, randomPosition, Quaternion.identity);
+                Instantiate(treeType.prefab, randomPosition, Quaternion.identity);
                 spawnedTrees++;
             }
+
+            yield return new WaitForSeconds(spawnDelay);
+            
         }
     }
 
-    bool IsCollidingWithObjects(Vector3 position, float radius)
+    private Vector3 GetRandomPosition(Vector3 min, Vector3 max)
     {
-        // Perform a sphere check at the position for any colliders.
-        // Note: You might want to exclude the tree layer or any other specific layers from this check.
-        Collider[] hitColliders = Physics.OverlapSphere(position, radius);
+        return new Vector3(
+            Random.Range(min.x, max.x),
+            Random.Range(min.y, max.y),
+            Random.Range(min.z, max.z)
+        );
+    }
 
-        if (hitColliders.Length > 0)
+    private bool IsCollidingWithObstacles(Vector3 position, float radius)
+    {
+        foreach (var collider in obstacleColliders)
         {
-            // Optionally, you can further inspect the hitColliders array to take specific actions
-            // depending on what objects are colliding.
-            return true; // We've hit something, so this position is not good for spawning a tree
+            if (collider.bounds.Intersects(new Bounds(position, Vector3.one * radius * 2)))
+            {
+                return true; // The position intersects with one of the obstacle colliders
+            }
         }
-        return false; // No collisions, it's safe to spawn a tree here
+        return false; // No intersections found, it's safe to spawn a tree here
     }
 }
