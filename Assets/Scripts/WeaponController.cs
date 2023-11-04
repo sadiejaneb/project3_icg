@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using BigRookGames.Weapons;
-using UnityEngine.UI; // Required for UI components
 public class WeaponController : MonoBehaviour
 {
     List<GameObject> collectedWeapons = new List<GameObject>();
