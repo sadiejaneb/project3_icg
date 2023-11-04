@@ -64,9 +64,9 @@ public class navigation_patrol : MonoBehaviour
             //AimGunAtPlayer();  // Point the gun directly at the player
             HandlePlayerInZone();
         }
-        else
+        if (!playerInZone)
         {
-            HandlePlayerOutOfZone();
+            GotoNextPoint();
         }
     }
     public void playDamageSound()

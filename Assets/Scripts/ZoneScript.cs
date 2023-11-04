@@ -11,4 +11,13 @@ public class ZoneScript : MonoBehaviour
             AudioManager.Instance.PlayZoneMusic(); // Switch to zone music
         }
     }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            navigation_patrol.playerInZone = false; //alert enemies that player is no longer near
+            AudioManager.Instance.PlayBackgroundMusic(); // Switch to main music
+        }
+    }
 }
