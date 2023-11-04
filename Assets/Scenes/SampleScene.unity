@@ -11926,7 +11926,7 @@ MonoBehaviour:
   deadNPCs: 0
   playerInWinZone: 0
   totalNPCs: 2
-  uiManager: {fileID: 0}
+  uiManager: {fileID: 1109070697}
 --- !u!4 &2037912488
 Transform:
   m_ObjectHideFlags: 0

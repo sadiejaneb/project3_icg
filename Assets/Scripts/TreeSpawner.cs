@@ -1,4 +1,5 @@
 using System.Collections;
+using StarterAssets;
 using UnityEngine;
 
 public class TreeSpawner : MonoBehaviour
@@ -18,33 +19,56 @@ public class TreeSpawner : MonoBehaviour
     public Vector3 spawnAreaMax;
     public float spawnDelay = 0.1f; // Delay between spawns to prevent freezing
 
-    private void Start()
-    {
-        foreach (var treeType in treeTypes)
+    private int totalTreeCount;
+    private int treesSpawned;
+
+    private int spawnCoroutineCount = 0; // To track how many coroutines have been started
+    private FirstPersonController playerController;
+
+
+private void Start()
+{
+    FirstPersonController playerController = FindObjectOfType<FirstPersonController>();
+        if (playerController != null)
         {
-            StartCoroutine(SpawnTrees(treeType));
+            playerController.canMove = false; // Disable movement at start
         }
-        
+
+        treesSpawned = 0;
+    spawnCoroutineCount = treeTypes.Length; // Set to the number of tree types we'll be spawning
+
+    foreach (var treeType in treeTypes)
+    {
+        totalTreeCount += treeType.quantity;
+        StartCoroutine(SpawnTrees(treeType));
+    }
+}
+
+private IEnumerator SpawnTrees(TreeType treeType)
+{
+    int spawnedTrees = 0;
+
+    while (spawnedTrees < treeType.quantity)
+    {
+        Vector3 randomPosition = GetRandomPosition(spawnAreaMin, spawnAreaMax);
+
+        if (!playAreaCollider.bounds.Contains(randomPosition) && !IsCollidingWithObstacles(randomPosition, treeType.checkRadius))
+        {
+            Instantiate(treeType.prefab, randomPosition, Quaternion.identity);
+            spawnedTrees++;
+            treesSpawned++;
+        }
+
+        yield return new WaitForSeconds(spawnDelay);
     }
 
-    private IEnumerator SpawnTrees(TreeType treeType)
+    // Decrement the counter and check if all coroutines have finished
+    spawnCoroutineCount--;
+    if (spawnCoroutineCount <= 0)
     {
-        int spawnedTrees = 0;
-
-        while (spawnedTrees < treeType.quantity)
-        {
-            Vector3 randomPosition = GetRandomPosition(spawnAreaMin, spawnAreaMax);
-
-            if (!playAreaCollider.bounds.Contains(randomPosition) && !IsCollidingWithObstacles(randomPosition, treeType.checkRadius))
-            {
-                Instantiate(treeType.prefab, randomPosition, Quaternion.identity);
-                spawnedTrees++;
-            }
-
-            yield return new WaitForSeconds(spawnDelay);
-            
-        }
+        FinishSpawning();
     }
+}
 
     private Vector3 GetRandomPosition(Vector3 min, Vector3 max)
     {
@@ -59,11 +83,25 @@ public class TreeSpawner : MonoBehaviour
     {
         foreach (var collider in obstacleColliders)
         {
-            if (collider.bounds.Intersects(new Bounds(position, Vector3.one * radius * 2)))
+            // Check if the collider is null or if the GameObject is not active
+            if (collider != null && collider.gameObject.activeInHierarchy)
             {
-                return true; // The position intersects with one of the obstacle colliders
+                if (collider.bounds.Intersects(new Bounds(position, Vector3.one * radius * 2)))
+                {
+                    return true; // The position intersects with one of the obstacle colliders
+                }
             }
         }
         return false; // No intersections found, it's safe to spawn a tree here
+    }
+    private void FinishSpawning()
+    {
+        // Re-enable player movement once the trees are loaded
+        FirstPersonController playerController = FindObjectOfType<FirstPersonController>(); 
+        if (playerController != null)
+        {
+            playerController.canMove = true; // Enable movement
+        }
+       
     }
 }

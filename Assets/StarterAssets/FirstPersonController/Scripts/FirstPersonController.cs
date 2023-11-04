@@ -15,7 +15,7 @@ namespace StarterAssets
 		[Tooltip("Move speed of the character in m/s")]
 		public float MoveSpeed = 4.0f;
 		[Tooltip("Sprint speed of the character in m/s")]
-		public float SprintSpeed = 6.0f;
+		public float SprintSpeed = 7.0f;
 		[Tooltip("Rotation speed of the character")]
 		public float RotationSpeed = 1.0f;
 		[Tooltip("Acceleration and deceleration")]
@@ -73,6 +73,8 @@ namespace StarterAssets
 		private GameObject _mainCamera;
 
 		private const float _threshold = 0.01f;
+		public bool canMove = false; 
+
 
 		private bool IsCurrentDeviceMouse
 		{
@@ -153,6 +155,10 @@ namespace StarterAssets
 
 		private void Move()
 		{
+			if (!canMove)
+			{
+				return; // Exit the function early if canMove is false
+			}
 			// set target speed based on move speed, sprint speed and if sprint is pressed
 			float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
 
@@ -200,7 +206,7 @@ namespace StarterAssets
 
 		private void JumpAndGravity()
 		{
-			if (Grounded)
+			if (Grounded && canMove)
 			{
 				// reset the fall timeout timer
 				_fallTimeoutDelta = FallTimeout;

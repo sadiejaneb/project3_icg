@@ -72,8 +72,17 @@ public class navigation_patrol : MonoBehaviour
     public void playDamageSound()
     {
         Debug.Log("playDamageSound called");
-        // Assuming yellSoundNPC is shorter, delay the damageSoundNPC by its length
+        
         StartCoroutine(DelayedPlayDamageSound());
+    }
+    public float playDeathSound()
+    {
+        if (audioSource != null && yellSoundNPC != null)
+        {
+            audioSource.PlayOneShot(yellSoundNPC);
+            return yellSoundNPC.length;
+        }
+        return 0f;
     }
 
     IEnumerator DelayedPlayDamageSound()
@@ -174,8 +183,6 @@ public class navigation_patrol : MonoBehaviour
                 // This means the ray has hit the player, apply damage or any other effect here.
                 hitInfo.collider.GetComponent<PlayerHealth>().TakeDamage();
             }
-         
-            
         }
     }
     public void stopShooting() {
