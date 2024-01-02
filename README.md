@@ -2,7 +2,7 @@
 
 Unity first person shooter game in Unity with C#, focusing on advanced scripting to create a dynamic environment. Focused on scripting enemy and player behavior as well as item collection and user interface. The game starts with no weapoons or ammo. Player can collect 2 different types of weapons, an automatic rifle and an RPG as well as ammo by walking over them in the game world.  The guns can be swapped through with Q and reloaded with R. The objective is to kill both NPC's and enter the house to win. Game includes bullet/rpg collision effects, User Interface, item collection, projectile and ray casting shooting, background music, and sound effects. 
 
-![Screenshot](images/screeenshot.jpg)
+![Screenshot](images/screeenshot.png)
 
 ## Getting Started
 
