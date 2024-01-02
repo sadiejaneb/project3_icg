@@ -152,14 +152,15 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   patrolSpeed: 2
   chaseSpeed: 5
   shootingRange: 30
   rotSpeed: 10
-  timer: 3
+  timer: 1
   bullet: {fileID: 5005254976791782789, guid: 3d4e70e2cead7814ea648bd710a4f464, type: 3}
   spawnPoint: {fileID: 4485382855696023418}
-  enemySpeed: 2000
+  enemySpeed: 5000
   yellSoundNPC: {fileID: 8300000, guid: 5ed176f89f549d24a83fa420c256201e, type: 3}
 --- !u!82 &78610241771260833
 AudioSource:
